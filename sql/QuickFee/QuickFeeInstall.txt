@@ -1,0 +1,23 @@
+To Install for QuickFee:
+
+Update the PaymentPortal.setParamters.xml for the database:
+Run the PaymentPortal.deploy.cmd /T 
+Run the PaymentPortal.deploy.cmd /Y
+
+SQL Updates:
+SQL should already be updated (scripts included if needed for manual install)
+Update the URL in the quickfee_pe6_fee_bulk_print to the URL where PaymentPortal is installed.
+
+In PE Application:
+Within PE System SP Mapping Page (map the pe6_fee_bulk_print and pe_Client_Drs_Parameters SP's to the quickfee_* versions - modify client versions if present)
+
+On Invoice Layout:
+Update the Invoice Layout to Include a Link to the Quickfee URL
+
+Within IIS Application Settings:
+Set the FirmName
+Copy the firm's logo to /images/logo.png file (overwrite what is there)
+Set the theme to one of these: cerulean, cosmo, darkly, flatly, paper, sandstone, simplex, superhero, united, and yeti
+(see: http://bootswatch.com for demos)
+Make sure the Provider type is: 'PEPaymentProvider.QuickFeeProvider'
+Set the QuickFeeUrl, QuickFeeUsername, QuickFeePassword

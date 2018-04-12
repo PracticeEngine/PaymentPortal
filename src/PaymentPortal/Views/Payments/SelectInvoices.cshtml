@@ -1,0 +1,50 @@
+﻿@model PaymentPortal.Models.SelectInvoicesModel
+<div class="row">
+    <div class="col-md-3">
+        <img src="@Html.Raw(System.Configuration.ConfigurationManager.AppSettings["FirmLogo"])" alt="@Html.Raw(System.Configuration.ConfigurationManager.AppSettings["FirmName"])" class="img-responsive" />
+    </div>
+    <div class="col-md-9 text-right">
+        <blockquote>
+            <div class="h6">Client: @Model.Client.ClientCode</div>
+            <address>
+                <strong>@Model.Client.ClientName</strong><br/>
+                @Model.Client.ContAddress<br />
+                @Model.Client.ContCity, @Model.Client.ContCounty, @Model.Client.ContPostCode
+            </address>
+        </blockquote>
+    </div>
+</div>
+<hr />
+@using (Html.BeginForm("PayNow", "Payments", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    <fieldset>
+        @Html.AntiForgeryToken()
+        <legend>Select Invoices to Pay Now</legend>
+        <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-8">
+                <button type="submit" class="btn btn-primary">Pay Selected Invoices Now</button>
+            </div>
+        </div>
+        @foreach (var inv in Model.Invoices)
+        {
+            var sym = inv.DebtTranCur == "GBP" ? "£" : "$";
+            var ttl = sym + inv.DebtForTotal.ToString("N2");
+            var outstanding = sym + inv.DebtForUnpaid.ToString("N2");
+            <div class="col-sm-4">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" checked name="Invoices" value="@inv.DebtTranRefAlpha" />
+                        Invoice #@inv.DebtTranRefAlpha for @ttl on @inv.DebtTranDate.ToShortDateString()<br />
+                        <strong>@outstanding outstanding</strong>
+                    </label>
+                </div>
+            </div>
+        }
+        <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-8">
+                <button type="submit" class="btn btn-primary">Pay Selected Invoices Now</button>
+            </div>
+        </div>
+    </fieldset>
+}
+

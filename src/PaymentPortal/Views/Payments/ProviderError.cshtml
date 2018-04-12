@@ -1,0 +1,11 @@
+﻿@model PEPaymentProvider.ProviderError
+<img src="@Html.Raw(System.Configuration.ConfigurationManager.AppSettings["FirmLogo"])" alt="@Html.Raw(System.Configuration.ConfigurationManager.AppSettings["FirmName"])" class="img-responsive" />
+<hr />
+<div class="alert alert-warning">
+    <h2>Sorry, an error occurred with the payment provider.</h2>
+    <p>We cannot continue your request. Please check back later.</p>
+    <dl>
+        <dt>@Model.Code</dt>
+        <dd>@Model.Message</dd>
+    </dl>
+</div>

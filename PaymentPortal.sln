@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2037
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{DBBE4C29-4F3D-4BFA-9404-7A42F2F4D3CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentPortal", "src\PaymentPortal\PaymentPortal.csproj", "{9FE6AA1D-74CE-4477-9D1F-2CA4B41070A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PEPaymentProvider.Interface", "src\PEPaymentProvider.Interface\PEPaymentProvider.Interface.csproj", "{CA097EA0-590F-4400-8DE0-590BF92352B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PEPaymentProvider.QuickFee", "src\PEPaymentProvider.QuickFee\PEPaymentProvider.QuickFee.csproj", "{FC2A58C8-E5FF-4B93-BBEE-6E07A8175E89}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9FE6AA1D-74CE-4477-9D1F-2CA4B41070A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FE6AA1D-74CE-4477-9D1F-2CA4B41070A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FE6AA1D-74CE-4477-9D1F-2CA4B41070A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FE6AA1D-74CE-4477-9D1F-2CA4B41070A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA097EA0-590F-4400-8DE0-590BF92352B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA097EA0-590F-4400-8DE0-590BF92352B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA097EA0-590F-4400-8DE0-590BF92352B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA097EA0-590F-4400-8DE0-590BF92352B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC2A58C8-E5FF-4B93-BBEE-6E07A8175E89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC2A58C8-E5FF-4B93-BBEE-6E07A8175E89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC2A58C8-E5FF-4B93-BBEE-6E07A8175E89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC2A58C8-E5FF-4B93-BBEE-6E07A8175E89}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CA097EA0-590F-4400-8DE0-590BF92352B8} = {DBBE4C29-4F3D-4BFA-9404-7A42F2F4D3CD}
+		{FC2A58C8-E5FF-4B93-BBEE-6E07A8175E89} = {DBBE4C29-4F3D-4BFA-9404-7A42F2F4D3CD}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {59298EAB-1172-4A6F-9941-F272612DDA42}
+	EndGlobalSection
+EndGlobal
