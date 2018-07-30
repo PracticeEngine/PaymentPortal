@@ -16,37 +16,23 @@ namespace PaymentPortal.Controllers
 {
     public class PaymentsController : Controller
     {
+        private readonly IPaymentProvider paymentProvider;
         private readonly AntiForgeryService antiForgeryService;
         private readonly EngineService engineService;
 
         public PaymentsController()
             :base()
         {
+            this.paymentProvider = ProviderService.GetProvider();
             this.antiForgeryService = new AntiForgeryService();
             this.engineService = new EngineService();
         }
 
         protected override void Initialize(RequestContext requestContext)
         {
-            ViewBag.ProviderName = GetProvider().DisplayName;
+            ViewBag.ProviderName = paymentProvider.DisplayName;
             ViewBag.Title = ConfigurationManager.AppSettings["FirmName"];
             base.Initialize(requestContext);
-        }
-
-        /// <summary>
-        /// Returns the Correct PaymentProvider (as configured in Web.config)
-        /// </summary>
-        /// <returns></returns>
-        private IPaymentProvider GetProvider()
-        {
-            var type = ConfigurationManager.AppSettings["ProviderType"];
-
-            switch(type)
-            {
-                case "PEPaymentProvider.QuickFeeProvider":
-                    return new QuickFeeProvider();
-            }
-            return null;
         }
 
         /// <summary>
@@ -177,8 +163,7 @@ namespace PaymentPortal.Controllers
                 var invoices = engineService.GetInvoiceDetails(ContIndex);
                 var topay = invoices.Where(i => Invoices.Contains(i.DebtTranRefAlpha)).ToList();
 
-                IPaymentProvider provider = GetProvider();
-                ProviderResult result = await provider.SubmitInvoices(client, topay);
+                ProviderResult result = await paymentProvider.SubmitInvoices(client, topay);
 
                 // Deal with Error First
                 if (result is ProviderError)
@@ -188,7 +173,7 @@ namespace PaymentPortal.Controllers
                 else
                 {
                     // If not error, record payment sent
-                    engineService.SetPaymentMessage(ContIndex, String.Join(",", Invoices), provider.DisplayName);
+                    engineService.SetPaymentMessage(ContIndex, String.Join(",", Invoices), paymentProvider.DisplayName);
                 }
 
                 // Now Handle the Response
