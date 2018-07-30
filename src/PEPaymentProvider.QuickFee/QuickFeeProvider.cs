@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web.Hosting;
 using System.Xml.Linq;
 
 namespace PEPaymentProvider
@@ -257,6 +258,15 @@ namespace PEPaymentProvider
                 new XElement("Session", session)
                 )));
             return request.ToString();
+        }
+
+        /// <summary>
+        /// Returns Hosted Service to do Background Tasks
+        /// </summary>
+        /// <returns></returns>
+        public IRegisteredObject GetHostedService()
+        {
+            return null;
         }
     }
 }
