@@ -45,7 +45,7 @@ namespace PEPaymentProvider
 
 
         /// <summary>
-        /// 
+        /// Submits Invoices to QuickFee
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="client"></param>

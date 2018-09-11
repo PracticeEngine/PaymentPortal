@@ -20,6 +20,7 @@ namespace PEPaymentProvider.Receipting
     public class ReceiptSync
     {
         private readonly RedPlanetXML redPlanetXML;
+        private readonly PEPaymentService.ReceiptProcessor receiptProcessor;
         private readonly Config config;
         private readonly string resilianceFile;
 
@@ -32,6 +33,7 @@ namespace PEPaymentProvider.Receipting
                 Password = ConfigurationManager.AppSettings["QuickFeePassword"]
             };
             redPlanetXML = new RedPlanetXML();
+            receiptProcessor = new PEPaymentService.ReceiptProcessor();
             resilianceFile = HostingEnvironment.MapPath("~/App_Data/ReceiptData.xml");
         }
 
@@ -109,7 +111,7 @@ namespace PEPaymentProvider.Receipting
         /// </summary>
         /// <param name="loanStatusResponse"></param>
         /// <returns></returns>
-        private async Task ProcessLoanStatusData(XDocument loanStatusResponse)
+        private Task ProcessLoanStatusData(XDocument loanStatusResponse)
         {
 
             // Process the Bank Data
@@ -119,9 +121,24 @@ namespace PEPaymentProvider.Receipting
                 {
                     var bankFile = new BankFile(bankData);
 
-                    // To Do: Lookup List of Associated Invoices
-
-                    // Then pass off to PE System
+                    // Call PE System to notify of Payment
+                    foreach(var detail in bankFile.Details)
+                    {
+                        switch(detail.InstructionType)
+                        {
+                            case "05":
+                                receiptProcessor.ProcessPayment(detail.InvoiceNumber.Split(','), detail.TranReferenceNumber, detail.Amount, detail.UTCDateOfPayment);
+                                break;
+                            case "15":
+                                receiptProcessor.ProcessErrorCorrection(detail.InvoiceNumber.Split(','), detail.TranReferenceNumber, detail.Amount, detail.UTCDateOfPayment, detail.ErrorCorrectionDescription);
+                                break;
+                            case "25":
+                                receiptProcessor.ProcessReversal(detail.InvoiceNumber.Split(','), detail.TranReferenceNumber, detail.Amount, detail.UTCDateOfPayment);
+                                break;
+                            default:
+                                throw new Exception("Invalid InstructionType received in the BankFile from QuickFee");
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -132,7 +149,7 @@ namespace PEPaymentProvider.Receipting
             }
 
             File.Delete(resilianceFile);
-
+            return Task.CompletedTask;
         }
 
 

@@ -129,7 +129,7 @@ namespace PEPaymentProvider.RedPlanet
         }
 
         /// <summary>
-        /// Produces an Error from the response XML
+        /// Returns the Redirect Information from a New Loan Response
         /// </summary>
         /// <param name="responseXML"></param>
         /// <returns></returns>

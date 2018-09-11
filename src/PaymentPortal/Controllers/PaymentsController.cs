@@ -158,6 +158,12 @@ namespace PaymentPortal.Controllers
         {
             try
             {
+                if (Invoices.Sum(i => i.Length) > 21)
+                {
+                    ModelState.AddModelError("", "Too many invoices selected. Sorry, but we cannot process all those invoices at one time.");
+                    return View("SelectInvoices");
+                }
+
                 int ContIndex = Convert.ToInt32(User.Identity.Name);
                 var client = engineService.GetClientDetails(ContIndex);
                 var invoices = engineService.GetInvoiceDetails(ContIndex);

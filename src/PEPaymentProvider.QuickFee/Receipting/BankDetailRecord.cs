@@ -61,6 +61,35 @@ namespace PEPaymentProvider.Receipting
         /// </summary>
         public string ErrorCorrectionReason { get; private set; }
 
+        public string ErrorCorrectionDescription {
+            get
+            {
+                switch(ErrorCorrectionReason)
+                {
+                    case "000":
+                        return String.Empty;
+                    case "001":
+                        return "Payer paid twice (or more)";
+                    case "002":
+                        return "Payer paid wrong account ";
+                    case "003":
+                        return "Payer paid wrong Biller";
+                    case "004":
+                        return "Payer paid wrong amount";
+                    case "005":
+                        return "Payer did not authorise payment";
+                    case "400":
+                        return "Valid Visa chargeback reason code";
+                    case "500":
+                        return "Valid MasterCard chargeback reason code";
+                    case "600":
+                        return "Valid Bankcard chargeback reason code";
+                    default:
+                        return $"Unknown Reason Code '{ErrorCorrectionReason}' - Check with Quickfee";
+                }
+            }
+        }
+
         public decimal Amount { get; private set; }
 
         public DateTime UTCDateOfPayment { get; private set; }

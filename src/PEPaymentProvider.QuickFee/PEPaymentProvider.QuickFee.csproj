@@ -69,6 +69,10 @@
       <Project>{ca097ea0-590f-4400-8de0-590bf92352b8}</Project>
       <Name>PEPaymentProvider.Interface</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PEPaymentService\PEPaymentService.csproj">
+      <Project>{722adc20-6dda-45b0-bce0-0fcaa72e7822}</Project>
+      <Name>PEPaymentService</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="PEPayments.snk" />
