@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PEPaymentProvider.QuickFee"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PEPaymentService", "src\PEPaymentService\PEPaymentService.csproj", "{722ADC20-6DDA-45B0-BCE0-0FCAA72E7822}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PELoggingService", "src\PELoggingService\PELoggingService.csproj", "{51169C23-57F4-4C28-BAB8-28C0DDCC99CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{722ADC20-6DDA-45B0-BCE0-0FCAA72E7822}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{722ADC20-6DDA-45B0-BCE0-0FCAA72E7822}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{722ADC20-6DDA-45B0-BCE0-0FCAA72E7822}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51169C23-57F4-4C28-BAB8-28C0DDCC99CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51169C23-57F4-4C28-BAB8-28C0DDCC99CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51169C23-57F4-4C28-BAB8-28C0DDCC99CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51169C23-57F4-4C28-BAB8-28C0DDCC99CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -43,6 +49,7 @@ Global
 		{CA097EA0-590F-4400-8DE0-590BF92352B8} = {DBBE4C29-4F3D-4BFA-9404-7A42F2F4D3CD}
 		{FC2A58C8-E5FF-4B93-BBEE-6E07A8175E89} = {DBBE4C29-4F3D-4BFA-9404-7A42F2F4D3CD}
 		{722ADC20-6DDA-45B0-BCE0-0FCAA72E7822} = {DBBE4C29-4F3D-4BFA-9404-7A42F2F4D3CD}
+		{51169C23-57F4-4C28-BAB8-28C0DDCC99CB} = {DBBE4C29-4F3D-4BFA-9404-7A42F2F4D3CD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59298EAB-1172-4A6F-9941-F272612DDA42}
