@@ -15,6 +15,28 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PEPaymentService", "src\PEP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PELoggingService", "src\PELoggingService\PELoggingService.csproj", "{51169C23-57F4-4C28-BAB8-28C0DDCC99CB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{0C4BBA03-C1FB-4D69-9C52-CDD2BCD9C63E}"
+	ProjectSection(SolutionItems) = preProject
+		sql\PaymentPortal\PP_Add_Corrections.sql = sql\PaymentPortal\PP_Add_Corrections.sql
+		sql\PaymentPortal\PP_Add_Payments.sql = sql\PaymentPortal\PP_Add_Payments.sql
+		sql\PaymentPortal\PP_Add_Reversals.sql = sql\PaymentPortal\PP_Add_Reversals.sql
+		sql\PaymentPortal\PP_Client_Details.sql = sql\PaymentPortal\PP_Client_Details.sql
+		sql\PaymentPortal\PP_Collection_Message.sql = sql\PaymentPortal\PP_Collection_Message.sql
+		sql\PaymentPortal\PP_Invoice_Details.sql = sql\PaymentPortal\PP_Invoice_Details.sql
+		sql\PaymentPortal\PP_Validate_Login.sql = sql\PaymentPortal\PP_Validate_Login.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "QuickFee", "QuickFee", "{B2D31070-D381-49D8-BBE0-2594F844B678}"
+	ProjectSection(SolutionItems) = preProject
+		sql\QuickFee\quickfee_pe6_Client_DrCollection_Parameters.sql = sql\QuickFee\quickfee_pe6_Client_DrCollection_Parameters.sql
+		sql\QuickFee\quickfee_pe6_fee_bulk_print.sql = sql\QuickFee\quickfee_pe6_fee_bulk_print.sql
+		sql\QuickFee\QuickFeeTable.sql = sql\QuickFee\QuickFeeTable.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E211FED3-50CA-4789-82AF-26EDF5FFF01D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PEPaymentProvider.QuickFee.Tests", "test\PEPaymentProvider.QuickFee.Tests\PEPaymentProvider.QuickFee.Tests.csproj", "{603D1597-9B31-4FA1-B9F2-0885174E6E77}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +63,10 @@ Global
 		{51169C23-57F4-4C28-BAB8-28C0DDCC99CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51169C23-57F4-4C28-BAB8-28C0DDCC99CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51169C23-57F4-4C28-BAB8-28C0DDCC99CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{603D1597-9B31-4FA1-B9F2-0885174E6E77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{603D1597-9B31-4FA1-B9F2-0885174E6E77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{603D1597-9B31-4FA1-B9F2-0885174E6E77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{603D1597-9B31-4FA1-B9F2-0885174E6E77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,6 +76,8 @@ Global
 		{FC2A58C8-E5FF-4B93-BBEE-6E07A8175E89} = {DBBE4C29-4F3D-4BFA-9404-7A42F2F4D3CD}
 		{722ADC20-6DDA-45B0-BCE0-0FCAA72E7822} = {DBBE4C29-4F3D-4BFA-9404-7A42F2F4D3CD}
 		{51169C23-57F4-4C28-BAB8-28C0DDCC99CB} = {DBBE4C29-4F3D-4BFA-9404-7A42F2F4D3CD}
+		{B2D31070-D381-49D8-BBE0-2594F844B678} = {0C4BBA03-C1FB-4D69-9C52-CDD2BCD9C63E}
+		{603D1597-9B31-4FA1-B9F2-0885174E6E77} = {E211FED3-50CA-4789-82AF-26EDF5FFF01D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59298EAB-1172-4A6F-9941-F272612DDA42}

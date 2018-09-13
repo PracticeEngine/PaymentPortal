@@ -1,13 +1,10 @@
 ﻿using Newtonsoft.Json;
 using PEPaymentProvider.RedPlanet;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Hosting;
@@ -122,7 +119,7 @@ namespace PEPaymentProvider.Receipting
         /// </summary>
         /// <param name="loanStatusResponse"></param>
         /// <returns></returns>
-        private Task ProcessLoanStatusData(XDocument loanStatusResponse)
+        private async Task ProcessLoanStatusData(XDocument loanStatusResponse)
         {
 
             // Process the Bank Data
@@ -140,13 +137,13 @@ namespace PEPaymentProvider.Receipting
                             switch (detail.InstructionType)
                             {
                                 case "05":
-                                    receiptProcessor.ProcessPayment(detail.InvoiceNumber.Split(','), detail.TranReferenceNumber, detail.Amount, detail.UTCDateOfPayment);
+                                    await receiptProcessor.ProcessPaymentAsync(detail.InvoiceNumber.Split(','), detail.TranReferenceNumber, detail.Amount, detail.UTCDateOfPayment);
                                     break;
                                 case "15":
-                                    receiptProcessor.ProcessErrorCorrection(detail.InvoiceNumber.Split(','), detail.TranReferenceNumber, detail.Amount, detail.UTCDateOfPayment, detail.ErrorCorrectionDescription);
+                                    await receiptProcessor.ProcessErrorCorrectionAsync(detail.InvoiceNumber.Split(','), detail.TranReferenceNumber, detail.Amount, detail.UTCDateOfPayment, detail.ErrorCorrectionDescription);
                                     break;
                                 case "25":
-                                    receiptProcessor.ProcessReversal(detail.InvoiceNumber.Split(','), detail.TranReferenceNumber, detail.Amount, detail.UTCDateOfPayment);
+                                    await receiptProcessor.ProcessReversalAsync(detail.InvoiceNumber.Split(','), detail.TranReferenceNumber, detail.Amount, detail.UTCDateOfPayment);
                                     break;
                                 default:
                                     throw new Exception("Invalid InstructionType received in the BankFile from QuickFee");
@@ -154,26 +151,25 @@ namespace PEPaymentProvider.Receipting
                         }
                         catch (Exception ex)
                         {
+                            // Log and Swallow Errors to Ensure single processing of the resilianceFile
                             loggingService.Logger.Error($"Error Processing Detail Record: {ex.Message}");
                             loggingService.Logger.Error($"Detail Record:\r\n{JsonConvert.SerializeObject(detail, Formatting.Indented)}");
                             Trace.TraceError(ex.Message);
                             Debug.WriteLine(ex.Message);
-
                         }
                     }
                 }
                 catch (Exception ex)
                 {
+                    // Log and Swallow Errors to Ensure single processing of the resilianceFile
                     loggingService.Logger.Error($"Error in BankFile: {ex.Message}");
                     loggingService.Logger.Error($"BankData:\r\n{bankData}");
                     Trace.TraceError(ex.Message);
                     Debug.WriteLine(ex.Message);
-
                 }
             }
 
             File.Delete(resilianceFile);
-            return Task.CompletedTask;
         }
 
 

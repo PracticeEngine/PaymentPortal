@@ -1,6 +1,6 @@
-﻿CREATE PROCEDURE QuickFee_Add_Reversals
+﻿CREATE PROCEDURE PP_Add_Corrections
 
-@Invoices nvarchar(50),
+@Invoices dbo.StringListType readonly,
 @PaymentRef nvarchar(20),
 @Amount money,
 @PaymentDate date
@@ -10,8 +10,8 @@ AS
 CREATE TABLE #Inv(ContIndex int, DebtTranIndex int, DebtTranRefAlpha nvarchar(15))
 
 INSERT INTO #Inv(ContIndex, DebtTranIndex, DebtTranRefAlpha)
-SELECT 0, 0, Item 
-FROM dbo.SplitString(@Invoices, ',')
+SELECT 0, 0, Name 
+FROM @Invoices
 
 DELETE
 FROM #Inv

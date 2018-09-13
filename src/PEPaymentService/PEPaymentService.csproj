@@ -46,10 +46,5 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Content Include="SQL\QuickFee_Add_Corrections.sql" />
-    <Content Include="SQL\QuickFee_Add_Reversals.sql" />
-    <Content Include="SQL\QuickFee_Add_Payments.sql" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

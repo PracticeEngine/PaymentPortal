@@ -27,7 +27,7 @@ namespace PEPaymentProvider.Receipting
             TranReferenceNumber = record.Substring(34, 21);
             InvoiceNumber = record.Substring(55, 21);
             ErrorCorrectionReason = record.Substring(76, 3);
-            Amount = (decimal)int.Parse(record.Substring(79, 12)) / 100M;
+            Amount = (decimal)long.Parse(record.Substring(79, 12)) / 100M;
             UTCDateOfPayment = TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(record.Substring(91,14), "yyyyMMddHHmmss", CultureInfo.InvariantCulture), TimeZoneInfo.FindSystemTimeZoneById(AEST_TIMEZONE_ID));
             BPaySettlementDate = DateTime.ParseExact(record.Substring(105, 8), "yyyyMMdd", CultureInfo.InvariantCulture);
 

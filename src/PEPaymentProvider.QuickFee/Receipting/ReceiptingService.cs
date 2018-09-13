@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Hosting;
@@ -21,6 +18,8 @@ namespace PEPaymentProvider.Receipting
         public ReceiptingService()
         {
             cancellationTokenSource = new CancellationTokenSource();
+
+            // Start a timer to work at the right time
             var runTime = ConfigurationManager.AppSettings["QuickFeeReceiptingRunTime"];
             timer = new Timer(RunReceiptSync, cancellationTokenSource.Token, CalculateNextRun(runTime), TimeSpan.FromHours(24));
 

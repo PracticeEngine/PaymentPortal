@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.SqlServer.Server;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PEPaymentService
@@ -27,9 +27,28 @@ namespace PEPaymentService
         /// <param name="Amount">Amount of Payment</param>
         /// <param name="utcDateOfPayment">Date of Payment</param>
         /// <returns></returns>
-        public Task ProcessPayment(string[] Invoices, string PaymentRef, decimal Amount, DateTime utcDateOfPayment)
+        public async Task ProcessPaymentAsync(string[] Invoices, string PaymentRef, decimal Amount, DateTime utcDateOfPayment)
         {
-            throw new NotImplementedException();
+            using (var cmd = connection.CreateCommand())
+            {
+                cmd.CommandText = "PP_Add_Payments";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@Invoices", SqlDbType.Structured).Value = ToStringListTypeData(Invoices);
+                cmd.Parameters.AddWithValue("@PaymentRef", PaymentRef);
+                cmd.Parameters.AddWithValue("@Amount", Amount);
+                cmd.Parameters.AddWithValue("@PaymentDate", utcDateOfPayment.Date);
+
+                await cmd.Connection.OpenAsync();
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                finally
+                {
+                    cmd.Connection.Close();
+                }
+            }
         }
 
         /// <summary>
@@ -41,9 +60,28 @@ namespace PEPaymentService
         /// <param name="utcDateOfCorrection">Date of Correction</param>
         /// <param name="CorrectionReason">Reason given for the Error Correction</param>
         /// <returns></returns>
-        public Task ProcessErrorCorrection(string[] Invoices, string PaymentRef, decimal Amount, DateTime utcDateOfCorrection, string CorrectionReason)
+        public async Task ProcessErrorCorrectionAsync(string[] Invoices, string PaymentRef, decimal Amount, DateTime utcDateOfCorrection, string CorrectionReason)
         {
-            throw new NotImplementedException();
+            using (var cmd = connection.CreateCommand())
+            {
+                cmd.CommandText = "PP_Add_Corrections";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@Invoices", SqlDbType.Structured).Value = ToStringListTypeData(Invoices);
+                cmd.Parameters.AddWithValue("@PaymentRef", PaymentRef);
+                cmd.Parameters.AddWithValue("@Amount", Amount);
+                cmd.Parameters.AddWithValue("@PaymentDate", utcDateOfCorrection.Date);
+
+                await cmd.Connection.OpenAsync();
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                finally
+                {
+                    cmd.Connection.Close();
+                }
+            }
         }
 
         /// <summary>
@@ -54,9 +92,45 @@ namespace PEPaymentService
         /// <param name="Amount">Amount of Reversal</param>
         /// <param name="utcDateOfReversal">Date of Reversal</param>
         /// <returns></returns>
-        public Task ProcessReversal(string[] Invoices, string PaymentRef, decimal Amount, DateTime utcDateOfReversal)
+        public async Task ProcessReversalAsync(string[] Invoices, string PaymentRef, decimal Amount, DateTime utcDateOfReversal)
         {
-            throw new NotImplementedException();
+            using (var cmd = connection.CreateCommand())
+            {
+                cmd.CommandText = "PP_Add_Reversals";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@Invoices", SqlDbType.Structured).Value = ToStringListTypeData(Invoices);
+                cmd.Parameters.AddWithValue("@PaymentRef", PaymentRef);
+                cmd.Parameters.AddWithValue("@Amount", Amount);
+                cmd.Parameters.AddWithValue("@PaymentDate", utcDateOfReversal.Date);
+
+                await cmd.Connection.OpenAsync();
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                finally
+                {
+                    cmd.Connection.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns Data as Records for StringListType
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private IEnumerable<SqlDataRecord> ToStringListTypeData(string[] data)
+        {
+            var stringListType = new SqlMetaData("Name", System.Data.SqlDbType.NVarChar, 256);
+
+            foreach(var value in data)
+            {
+                var record = new SqlDataRecord(stringListType);
+                record.SetString(0, value);
+                yield return record;
+            }
         }
     }
 }

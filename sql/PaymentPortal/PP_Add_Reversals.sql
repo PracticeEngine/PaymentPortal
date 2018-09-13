@@ -1,6 +1,6 @@
-﻿CREATE PROCEDURE QuickFee_Add_Payments
+﻿CREATE PROCEDURE PP_Add_Reversals
 
-@Invoices nvarchar(50),
+@Invoices dbo.StringListType readonly,
 @PaymentRef nvarchar(20),
 @Amount money,
 @PaymentDate date
@@ -10,8 +10,8 @@ AS
 CREATE TABLE #Inv(ContIndex int, DebtTranIndex int, DebtTranRefAlpha nvarchar(15))
 
 INSERT INTO #Inv(ContIndex, DebtTranIndex, DebtTranRefAlpha)
-SELECT 0, 0, Item 
-FROM dbo.SplitString(@Invoices, ',')
+SELECT 0, 0, Name 
+FROM @Invoices
 
 DELETE
 FROM #Inv
@@ -97,7 +97,7 @@ FETCH csr_Fees INTO @DebtTranIndex
 
 WHILE @@FETCH_STATUS = 0 AND @Amount > 0
 	BEGIN
-	SELECT @FeeAmount = DebtTranUnpaid FROM tblTranDebtor D WHERE D.DebtTranIndex = @DebtTranIndex
+	SELECT @FeeAmount = DebtTranTotal - DebtTranUnpaid FROM tblTranDebtor D WHERE D.DebtTranIndex = @DebtTranIndex
 	IF @FeeAmount > @Amount
 		SET @AllocAmount = @Amount
 	ELSE
