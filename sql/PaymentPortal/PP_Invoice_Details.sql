@@ -12,4 +12,8 @@ AS
 SELECT D.DebtTranIndex, D.DebtTranDate, D.DebtTranRefAlpha, D.ClientCode, D.DebtTranName, D.DebtForTotal, D.DebtForUnpaid, D.DebtTranCur
 FROM tblTranDebtor D
 WHERE D.ContIndex = @ContIndex AND D.DebtForUnpaid <> 0 AND D.DebtTranType IN (3,4)
-ORDER BY D.DEbtTranDate ASC
+UNION ALL
+SELECT D.DebtTranIndex, D.DebtTranDate, 'FC' + LTRIM(RTRIM(STR(DebtTranIndex))), D.ClientCode, D.DebtTranName, D.DebtForTotal, D.DebtForUnpaid, D.DebtTranCur
+FROM tblTranDebtor D
+WHERE D.ContIndex = @ContIndex AND D.DebtForUnpaid <> 0 AND D.DebtTranType IN (10)
+ORDER BY DebtTranDate ASC
