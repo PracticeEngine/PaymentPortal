@@ -28,14 +28,13 @@
         </div>
         @foreach (var inv in Model.Invoices)
         {
-            var sym = inv.DebtTranCur == "GBP" ? "£" : "$";
-            var ttl = sym + inv.DebtForTotal.ToString("N2");
-            var outstanding = sym + inv.DebtForUnpaid.ToString("N2");
+            var ttl = inv.CurSymbol + inv.DebtForTotal.ToString("N2");
+            var outstanding = inv.CurSymbol + inv.DebtForUnpaid.ToString("N2");
             <div class="col-sm-4">
                 <div class="checkbox">
                     <label>
                         <input type="checkbox" checked name="Invoices" value="@inv.DebtTranRefAlpha" />
-                        Invoice #@inv.DebtTranRefAlpha for @ttl on @inv.DebtTranDate.ToShortDateString()<br />
+                        @inv.TransactionType #@inv.DebtTranRefAlpha for @ttl on @inv.DebtTranDate.ToShortDateString()<br />
                         <strong>@outstanding outstanding</strong>
                     </label>
                 </div>

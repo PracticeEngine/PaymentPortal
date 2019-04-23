@@ -9,6 +9,8 @@ namespace PEPaymentProvider
     {
         public int DebtTranIndex { get; set; }
 
+        public string TransactionType { get; set; }
+
         public DateTime DebtTranDate { get; set; }
 
         public string DebtTranRefAlpha { get; set; }
@@ -21,6 +23,8 @@ namespace PEPaymentProvider
 
         public decimal DebtForUnpaid { get; set; }
 
-        public string DebtTranCur {get;set;} 
+        public string DebtTranCur {get;set; }
+
+        public string CurSymbol { get; set; }
     }
 }
