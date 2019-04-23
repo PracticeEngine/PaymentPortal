@@ -187,7 +187,7 @@ namespace PEPaymentProvider.RedPlanet
                 new XElement("FundML",
                 new XElement("Version", 1),
                 new XElement("Request",
-                new XElement("Code", "LoadStatus"),
+                new XElement("Code", "LoanStatus"),
                 new XElement("Session", session),
                 new XElement("Filter", "All")
                 )));
