@@ -10,7 +10,7 @@ CREATE PROCEDURE [dbo].[quickfee_pe6_Fee_Bulk_Print]
 AS
 
 	DECLARE @QFURL nvarchar(255)
-	SET @QFURL = 'http://wafffcxktcftkcfgtleandtosh.com/'
+	SET @QFURL = 'https://wafffcxktcftkcfgtleandtosh.com/payments/login'
 
 	CREATE TABLE #SEL (DebtTranIndex int)
 	
@@ -63,7 +63,9 @@ AS
 			CASE WHEN DateAdd(dd, Cast(E.ClientTerms as int), D.DebtTranDate) < GetDate() THEN 'y' ELSE 'n' END As IsOverDue,
 			CASE WHEN (SELECT Max(VATPercent) FROM tblTranDebtorDetail DD2 WHERE DD2.DebtTranIndex = DD.DebtTranIndex) > 0 THEN 'VAT at ' + Cast((SELECT Max(VATPercent) FROM tblTranDebtorDetail DD2 WHERE DD2.DebtTranIndex = DD.DebtTranIndex) as nvarchar) + '%' ELSE 'VAT Exempt' END As VATDesc,
 			Cur.CurSymbol, 1 As Final, D.DeliveryFormat, Coalesce(E.ClientCreditEMail,'') As ClientCreditEMail, Coalesce(Cred.StaffEMail,'') As CreditControllerEMail,
-			C.PracEMailOptions, @QFURL + CAST(QF.FeeGuid as nvarchar(255)) As QuickFeeLink
+			C.PracEMailOptions, DC.TranFileId,
+			@QFURL + CAST(QF.FeeGuid as nvarchar(255)) As QuickFeeLink,
+			'https://wafffcxktcftkcfgtleandtosh.com' AS QuickFeeDisplayLink
 	FROM	tblTranDebtor D INNER JOIN
 		#SEL ON D.DebtTranIndex = #SEL.DebtTranIndex INNER JOIN
 		tblTranDebtor_Collection DC ON D.DebtTranIndex = DC.DebtTranIndex INNER JOIN

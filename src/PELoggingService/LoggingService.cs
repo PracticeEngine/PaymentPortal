@@ -1,4 +1,8 @@
-﻿using Serilog;
+﻿//TODO - Logging Service
+
+//using Microsoft.WindowsAzure.Storage;
+using Microsoft.Azure.Storage;
+using Serilog;
 using Serilog.Sinks.Email;
 using System;
 using System.Collections.Generic;
@@ -23,35 +27,41 @@ namespace PELoggingService
         /// </summary>
         public LoggingService()
         {
-            var emailConnectionInfo = new EmailConnectionInfo
-            {
-                FromEmail = ConfigurationManager.AppSettings["ReceiptLogFrom"],
-                ToEmail = ConfigurationManager.AppSettings["ReceiptLogTo"],
-                MailServer = ConfigurationManager.AppSettings["ReceiptLogMailServer"],
-                EmailSubject = "Receipt Processing Log {timestamp}",
-                Port = int.Parse(ConfigurationManager.AppSettings["ReceiptLogPort"]),
-                EnableSsl = bool.Parse(ConfigurationManager.AppSettings["ReceiptLogSsl"])
-            };
+            //var emailConnectionInfo = new EmailConnectionInfo
+            //{
+            //    FromEmail = ConfigurationManager.AppSettings["ReceiptLogFrom"],
+            //    ToEmail = ConfigurationManager.AppSettings["ReceiptLogTo"],
+            //    MailServer = ConfigurationManager.AppSettings["ReceiptLogMailServer"],
+            //    EmailSubject = "Receipt Processing Log {timestamp}",
+            //    Port = int.Parse(ConfigurationManager.AppSettings["ReceiptLogPort"]),
+            //    EnableSsl = bool.Parse(ConfigurationManager.AppSettings["ReceiptLogSsl"])
+            //};
 
-            if (!String.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["ReceiptLogUser"]))
-            {
-                if (!String.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["ReceiptLogDomain"]))
-                {
-                    emailConnectionInfo.NetworkCredentials = new NetworkCredential(
-                        ConfigurationManager.AppSettings["ReceiptLogUser"], 
-                        ConfigurationManager.AppSettings["ReceiptLogPassword"], 
-                        ConfigurationManager.AppSettings["ReceiptLogDomain"]);
-                }
-                else
-                {
-                    emailConnectionInfo.NetworkCredentials = new NetworkCredential(
-                        ConfigurationManager.AppSettings["ReceiptLogUser"], 
-                        ConfigurationManager.AppSettings["ReceiptLogPassword"]);
-                }
-            }
+            //if (!String.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["ReceiptLogUser"]))
+            //{
+            //    if (!String.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["ReceiptLogDomain"]))
+            //    {
+            //        emailConnectionInfo.NetworkCredentials = new NetworkCredential(
+            //            ConfigurationManager.AppSettings["ReceiptLogUser"], 
+            //            ConfigurationManager.AppSettings["ReceiptLogPassword"], 
+            //            ConfigurationManager.AppSettings["ReceiptLogDomain"]);
+            //    }
+            //    else
+            //    {
+            //        emailConnectionInfo.NetworkCredentials = new NetworkCredential(
+            //            ConfigurationManager.AppSettings["ReceiptLogUser"], 
+            //            ConfigurationManager.AppSettings["ReceiptLogPassword"]);
+            //    }
+            //}
+
+            //Logger = new LoggerConfiguration()
+            //    .WriteTo.Email(emailConnectionInfo)
+            //    .CreateLogger();
+
+            var storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["CloudStorageAccount"]);
 
             Logger = new LoggerConfiguration()
-                .WriteTo.Email(emailConnectionInfo)
+                .WriteTo.AzureBlobStorage(null, storageAccount, Serilog.Events.LogEventLevel.Information, "paymentportallogs")
                 .CreateLogger();
         }
     }

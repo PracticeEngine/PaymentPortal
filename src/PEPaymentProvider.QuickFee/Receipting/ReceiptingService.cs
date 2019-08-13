@@ -1,60 +1,94 @@
-﻿using System;
+﻿//TODO - Resilliance file
+
+using System;
 using System.Configuration;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Web.Hosting;
 
 namespace PEPaymentProvider.Receipting
 {
     public class ReceiptingService : IRegisteredObject
     {
-        private readonly CancellationTokenSource cancellationTokenSource;
-        private readonly Timer timer;
+        private static CancellationTokenSource timerCancellationTokenSource;
+        private static System.Timers.Timer startTimer;
+        private static System.Timers.Timer frequencyTimer;
 
         /// <summary>
         /// Setup our Basic Service that runs the ReceiptSync process on a background thread every 24 hours
         /// </summary>
         public ReceiptingService()
         {
-            cancellationTokenSource = new CancellationTokenSource();
+            System.Diagnostics.Trace.TraceInformation("Receipting Service current time {0:HH:mm:ss.fff}", DateTime.Now.ToString());
 
-            // Start a timer to work at the right time
-            var runTime = ConfigurationManager.AppSettings["QuickFeeReceiptingRunTime"];
-            timer = new Timer(RunReceiptSync, cancellationTokenSource.Token, CalculateNextRun(runTime), TimeSpan.FromHours(24));
+            timerCancellationTokenSource = new CancellationTokenSource();
 
-            // Attempt to restart any paused processing
-            HostingEnvironment.QueueBackgroundWorkItem(CheckForUnfinishedWork);
+            var runOnStartup = bool.Parse(ConfigurationManager.AppSettings["ReceiptingRunOnStartup"]);
+
+            if (runOnStartup)
+                RunReceiptSync();
+
+            SetStartTimer();
         }
 
-        private async Task CheckForUnfinishedWork(CancellationToken token)
+        private static void SetStartTimer()
         {
-            var receiptSync = new ReceiptSync();
-            await receiptSync.ResumeInterruptedFile(token);
-        }
+            var runTime = ConfigurationManager.AppSettings["ReceiptingRunTime"];
 
-        /// <summary>
-        /// Calculates how long until the next time to run
-        /// </summary>
-        /// <param name="runTime">string of hh:mm</param>
-        /// <returns>TimeSpan representing how long it is until that time</returns>
-        public static TimeSpan CalculateNextRun(string runTime)
-        {
             var timeToRun = DateTime.ParseExact(runTime, "HH:mm", CultureInfo.InvariantCulture).TimeOfDay;
+
             var tillNextRun = DateTime.Now.TimeOfDay < timeToRun ? timeToRun.Subtract(DateTime.Now.TimeOfDay) : TimeSpan.FromDays(1).Subtract(DateTime.Now.TimeOfDay.Subtract(timeToRun));
-            return tillNextRun;
+
+            startTimer = new System.Timers.Timer(tillNextRun.TotalMilliseconds);
+
+            startTimer.Elapsed += StartTimerElapsed;
+            startTimer.AutoReset = false;
+            startTimer.Enabled = true;
         }
 
-        /// <summary>
-        /// Called by Backgroun Thread - Starts the Process to Handle Receipts
-        /// </summary>
-        /// <param name="state"></param>
-        private void RunReceiptSync(object state)
+        private static void StartTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            CancellationToken hostingToken = (CancellationToken)state;
-            var receiptSync = new ReceiptSync();
-            receiptSync.RunAsync(hostingToken).Wait();
+            RunReceiptSync();
+
+            SetFrequencyTimer();
         }
+
+        private static void SetFrequencyTimer()
+        {
+            var runFrequency = int.Parse(ConfigurationManager.AppSettings["ReceiptingRunFrequencyMinutes"]);
+
+            var runFrequencyMilliseconds = new TimeSpan(0, runFrequency, 0).TotalMilliseconds;
+
+            frequencyTimer = new System.Timers.Timer(runFrequencyMilliseconds);
+
+            frequencyTimer.Elapsed += FrequencyTimerElapsed;
+            frequencyTimer.AutoReset = true;
+            frequencyTimer.Enabled = true;
+        }
+
+        private static void FrequencyTimerElapsed(Object source, ElapsedEventArgs e)
+        {
+            RunReceiptSync();
+        }
+
+        private static void RunReceiptSync()
+        {
+            System.Diagnostics.Trace.TraceInformation("RunReceiptSync Started {0:HH:mm:ss.fff}", DateTime.Now.ToString());
+
+            var receiptSync = new ReceiptSync();
+            receiptSync.RunAsync(timerCancellationTokenSource.Token).Wait();
+
+            System.Diagnostics.Trace.TraceInformation("RunReceiptSync Complete {0:HH:mm:ss.fff}", DateTime.Now.ToString());
+        }
+
+        //TODO - NEED TO IMPLEMENT
+        //private async Task CheckForUnfinishedWork(CancellationToken token)
+        //{
+        //    var receiptSync = new ReceiptSync();
+        //    await receiptSync.ResumeInterruptedFile(token);
+        //}
 
         /// <summary>
         /// IRegisteredObject Implementation
@@ -63,8 +97,8 @@ namespace PEPaymentProvider.Receipting
         public void Stop(bool immediate)
         {
             // Request Cancellation if not already requested
-            if (!cancellationTokenSource.IsCancellationRequested)
-                cancellationTokenSource.Cancel();
+            if (!timerCancellationTokenSource.IsCancellationRequested)
+                timerCancellationTokenSource.Cancel();
 
             // Unregister this Object
             HostingEnvironment.UnregisterObject(this);

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿//TODO - Logging
+
+using Newtonsoft.Json;
 using PEPaymentProvider.RedPlanet;
 using System;
 using System.Configuration;
@@ -19,7 +21,7 @@ namespace PEPaymentProvider.Receipting
     {
         private readonly RedPlanetXML redPlanetXML;
         private readonly PEPaymentService.ReceiptProcessor receiptProcessor;
-        private readonly PELoggingService.LoggingService loggingService;
+        //private readonly PELoggingService.LoggingService loggingService;
         private readonly Config config;
         private readonly string resilianceFile;
 
@@ -31,10 +33,16 @@ namespace PEPaymentProvider.Receipting
                 Username = ConfigurationManager.AppSettings["QuickFeeUsername"],
                 Password = ConfigurationManager.AppSettings["QuickFeePassword"]
             };
+
             redPlanetXML = new RedPlanetXML();
+
             receiptProcessor = new PEPaymentService.ReceiptProcessor();
-            loggingService = new PELoggingService.LoggingService();
+
+            //loggingService = new PELoggingService.LoggingService();
+
             resilianceFile = HostingEnvironment.MapPath("~/App_Data/ReceiptData.xml");
+
+            System.Diagnostics.Trace.TraceInformation("Resiliance File", resilianceFile);
         }
 
         /// <summary>
@@ -44,13 +52,15 @@ namespace PEPaymentProvider.Receipting
         /// <returns></returns>
         public async Task RunAsync(CancellationToken token)
         {
+            System.Diagnostics.Trace.TraceInformation("RunAsync Started");
+
             try
             {
                 var httpClient = new HttpClient();
                 httpClient.BaseAddress = new Uri(config.Url);
 
                 // Login the the API
-                loggingService.Logger.Information("Logging into QuickFee");
+                //loggingService.Logger.Information("Logging into QuickFee");
                 var loginXML = redPlanetXML.BuildLoginRequest(config);
                 XDocument loginResult = await PostToQuickFee(httpClient, loginXML, token);
                 if (!redPlanetXML.IsSuccess(loginResult))
@@ -61,29 +71,40 @@ namespace PEPaymentProvider.Receipting
                     return;
 
                 // Request Loan Status Updates
-                loggingService.Logger.Information("Requesting Loan Status");
+                //loggingService.Logger.Information("Requesting Loan Status");
                 var session = redPlanetXML.GetSession(loginResult);
                 string quoteXML = redPlanetXML.BuildLoanStatusRequest(session);
                 XDocument loanStatusResponse = await PostToQuickFee(httpClient, quoteXML, token);
                 if (!redPlanetXML.IsSuccess(loanStatusResponse))
                     throw new Exception(redPlanetXML.GetError(loanStatusResponse).Message);
 
+                // Send confirmation request
+                //loggingService.Logger.Information("Sending Loan Status Confirmation");
+                string confirmationXML = redPlanetXML.BuildLoanStatusConfirmationRequest(session);
+
+                XDocument confirmationResponse = await PostToQuickFee(httpClient, confirmationXML, token);
+
+                if (!redPlanetXML.IsSuccess(confirmationResponse))
+                    throw new Exception(redPlanetXML.GetError(confirmationResponse).Message);
+
                 // Important Save this file in-case we are interrupted later.
-                loggingService.Logger.Information("Writing Resiliance File");
-                loanStatusResponse.Save(resilianceFile);
+                //loggingService.Logger.Information("Writing Resiliance File");
+                //loanStatusResponse.Save(resilianceFile);
 
                 // Check Token
                 if (token.IsCancellationRequested)
                     return;
 
                 // Process Loan Status Data
-                loggingService.Logger.Information("Processing Loan Status Data");
+                //loggingService.Logger.Information("Processing Loan Status Data");
                 await ProcessLoanStatusData(loanStatusResponse);
-                loggingService.Logger.Information("Processing Receipts Complete");
+                //loggingService.Logger.Information("Processing Receipts Complete");
+
+                System.Diagnostics.Trace.TraceInformation("RunAsync Complete");
             }
             catch (Exception ex)
             {
-                loggingService.Logger.Error(ex.Message);
+                //loggingService.Logger.Error(ex.Message);
                 Trace.TraceError(ex.Message);
                 Debug.WriteLine(ex.Message);
             }
@@ -100,7 +121,7 @@ namespace PEPaymentProvider.Receipting
             {
                 if (File.Exists(resilianceFile))
                 {
-                    loggingService.Logger.Information("Processing Data from Resiliance File");
+                    //loggingService.Logger.Information("Processing Data from Resiliance File");
                     XDocument loanStatusResponse = XDocument.Load(resilianceFile);
                     // Process Loan Status Data
                     await ProcessLoanStatusData(loanStatusResponse);
@@ -108,7 +129,7 @@ namespace PEPaymentProvider.Receipting
             }
             catch (Exception ex)
             {
-                loggingService.Logger.Error(ex.Message);
+                //loggingService.Logger.Error(ex.Message);
                 Trace.TraceError(ex.Message);
                 Debug.WriteLine(ex.Message);
             }
@@ -121,6 +142,7 @@ namespace PEPaymentProvider.Receipting
         /// <returns></returns>
         private async Task ProcessLoanStatusData(XDocument loanStatusResponse)
         {
+            //var processingError = false;
 
             // Process the Bank Data
             foreach (var bankData in redPlanetXML.ExtractBankFiles(loanStatusResponse))
@@ -137,13 +159,19 @@ namespace PEPaymentProvider.Receipting
                             switch (detail.InstructionType)
                             {
                                 case "05":
-                                    await receiptProcessor.ProcessPaymentAsync(detail.InvoiceNumber.Split(','), detail.TranReferenceNumber, detail.Amount, detail.UTCDateOfPayment);
+                                    System.Diagnostics.Trace.TraceInformation("ProcessPaymentAsync Started {0:HH:mm:ss.fff}", DateTime.Now.ToString());
+                                    System.Diagnostics.Trace.TraceInformation("Invoice Number - " + detail.InvoiceNumber);
+                                    System.Diagnostics.Trace.TraceInformation("Payent Reference - " + detail.PaymentReference);
+                                    System.Diagnostics.Trace.TraceInformation("Amount - " + detail.Amount.ToString());
+                                    System.Diagnostics.Trace.TraceInformation("Date of Payment - " + detail.UTCDateOfPayment.ToString());
+                                    await receiptProcessor.ProcessPaymentAsync(detail.InvoiceNumber.Split(','), detail.PaymentReference, detail.Amount, detail.UTCDateOfPayment);
+                                    System.Diagnostics.Trace.TraceInformation("ProcessPaymentAsync Complete {0:HH:mm:ss.fff}", DateTime.Now.ToString());
                                     break;
                                 case "15":
-                                    await receiptProcessor.ProcessErrorCorrectionAsync(detail.InvoiceNumber.Split(','), detail.TranReferenceNumber, detail.Amount, detail.UTCDateOfPayment, detail.ErrorCorrectionDescription);
+                                    await receiptProcessor.ProcessErrorCorrectionAsync(detail.InvoiceNumber.Split(','), detail.PaymentReference, detail.Amount, detail.UTCDateOfPayment, detail.ErrorCorrectionDescription);
                                     break;
                                 case "25":
-                                    await receiptProcessor.ProcessReversalAsync(detail.InvoiceNumber.Split(','), detail.TranReferenceNumber, detail.Amount, detail.UTCDateOfPayment);
+                                    await receiptProcessor.ProcessReversalAsync(detail.InvoiceNumber.Split(','), detail.PaymentReference, detail.Amount, detail.UTCDateOfPayment);
                                     break;
                                 default:
                                     throw new Exception("Invalid InstructionType received in the BankFile from QuickFee");
@@ -151,9 +179,11 @@ namespace PEPaymentProvider.Receipting
                         }
                         catch (Exception ex)
                         {
+                            //processingError = true;
+
                             // Log and Swallow Errors to Ensure single processing of the resilianceFile
-                            loggingService.Logger.Error($"Error Processing Detail Record: {ex.Message}");
-                            loggingService.Logger.Error($"Detail Record:\r\n{JsonConvert.SerializeObject(detail, Formatting.Indented)}");
+                            //loggingService.Logger.Error($"Error Processing Detail Record: {ex.Message}");
+                            //loggingService.Logger.Error($"Detail Record:\r\n{JsonConvert.SerializeObject(detail, Formatting.Indented)}");
                             Trace.TraceError(ex.Message);
                             Debug.WriteLine(ex.Message);
                         }
@@ -161,17 +191,21 @@ namespace PEPaymentProvider.Receipting
                 }
                 catch (Exception ex)
                 {
+                    //processingError = true;
+
                     // Log and Swallow Errors to Ensure single processing of the resilianceFile
-                    loggingService.Logger.Error($"Error in BankFile: {ex.Message}");
-                    loggingService.Logger.Error($"BankData:\r\n{bankData}");
+                    //loggingService.Logger.Error($"Error in BankFile: {ex.Message}");
+                    //loggingService.Logger.Error($"BankData:\r\n{bankData}");
                     Trace.TraceError(ex.Message);
                     Debug.WriteLine(ex.Message);
                 }
             }
 
-            File.Delete(resilianceFile);
-        }
+            //if(processingError)
+                //File.Copy(resilianceFile, HostingEnvironment.MapPath($"~/App_Data/ReceiptDataError{DateTime.Now.ToShortDateString()}.xml"));
 
+            //File.Delete(resilianceFile);
+        }
 
         /// <summary>
         /// Posts an XML Message to Quick Fee
@@ -187,6 +221,5 @@ namespace PEPaymentProvider.Receipting
             var loginResultXML = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
             return XDocument.Parse(loginResultXML);
         }
-
     }
 }

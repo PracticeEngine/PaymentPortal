@@ -145,6 +145,9 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="PEPayments.snk" />
+    <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\paype - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\pepaymentportaldemo - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\PublishOnly.pubxml" />
     <None Include="Properties\PublishProfiles\withumpayments - Web Deploy.pubxml" />

@@ -21,16 +21,16 @@ namespace PEPaymentProvider.Receipting
             if (record.Substring(0, 2) != "50")
                 throw new ArgumentOutOfRangeException(nameof(record), "data does not indicate this is a detail record.");
 
-            BillerCode = record.Substring(2, 10);
-            ClientCode = record.Substring(12, 20);
-            InstructionType = record.Substring(32, 2);
-            TranReferenceNumber = record.Substring(34, 21);
-            InvoiceNumber = record.Substring(55, 21);
-            ErrorCorrectionReason = record.Substring(76, 3);
-            Amount = (decimal)long.Parse(record.Substring(79, 12)) / 100M;
-            UTCDateOfPayment = TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(record.Substring(91,14), "yyyyMMddHHmmss", CultureInfo.InvariantCulture), TimeZoneInfo.FindSystemTimeZoneById(AEST_TIMEZONE_ID));
-            BPaySettlementDate = DateTime.ParseExact(record.Substring(105, 8), "yyyyMMdd", CultureInfo.InvariantCulture);
-
+            BillerCode = record.Substring(2, 10).Trim();
+            ClientCode = record.Substring(12, 20).Trim();
+            InstructionType = record.Substring(32, 2).Trim();
+            TranReferenceNumber = record.Substring(34, 21).Trim();
+            InvoiceNumber = record.Substring(55, 21).Trim();
+            ErrorCorrectionReason = record.Substring(76, 3).Trim();
+            Amount = (decimal)long.Parse(record.Substring(79, 12).Trim()) / 100M;
+            UTCDateOfPayment = TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(record.Substring(91,14).Trim(), "yyyyMMddHHmmss", CultureInfo.InvariantCulture), TimeZoneInfo.FindSystemTimeZoneById(AEST_TIMEZONE_ID));
+            BPaySettlementDate = DateTime.ParseExact(record.Substring(105, 8).Trim(), "yyyyMMdd", CultureInfo.InvariantCulture);
+            PaymentReference = record.Substring(113, 12).Trim().TrimStart('0');
         }
 
         public string BillerCode { get; private set; }
@@ -95,5 +95,7 @@ namespace PEPaymentProvider.Receipting
         public DateTime UTCDateOfPayment { get; private set; }
 
         public DateTime BPaySettlementDate { get; private set; }
+
+        public string PaymentReference { get; set; }
     }
 }

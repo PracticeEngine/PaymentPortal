@@ -35,8 +35,8 @@ namespace PEPaymentProvider.QuickFee.Tests.Receipting
             Assert.AreEqual("0000012708", detail.BillerCode, "Biller Code did not match");
             Assert.AreEqual("11261584150014427485", detail.ClientCode, "Client Code did not match");
             Assert.AreEqual("05", detail.InstructionType, "Instruction Type did not match");
-            Assert.AreEqual("ANZ20060125700742    ", detail.TranReferenceNumber, "TranReferenceNumber did not match");
-            Assert.AreEqual("                     ", detail.InvoiceNumber, "Invoice Number did not match");
+            Assert.AreEqual("ANZ20060125700742", detail.TranReferenceNumber, "TranReferenceNumber did not match");
+            Assert.AreEqual("", detail.InvoiceNumber, "Invoice Number did not match");
             Assert.AreEqual("000", detail.ErrorCorrectionReason, "Correction Reason did not match");
             Assert.AreEqual(485.00M, detail.Amount, "Amount did not match");
             Assert.AreEqual(TimeZoneInfo.ConvertTimeToUtc(new DateTime(2006, 1, 25, 10, 17,53), TimeZoneInfo.FindSystemTimeZoneById(AEST_TIMEZONE_ID)), detail.UTCDateOfPayment, "Payment Date did not match");

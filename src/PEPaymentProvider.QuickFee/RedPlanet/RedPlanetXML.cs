@@ -195,6 +195,23 @@ namespace PEPaymentProvider.RedPlanet
         }
 
         /// <summary>
+        /// Builds a Request for LoanStatusConfirmation
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
+        public string BuildLoanStatusConfirmationRequest(string session)
+        {
+            var request = new XDocument(
+                new XElement("FundML",
+                new XElement("Version", 1),
+                new XElement("Request",
+                new XElement("Code", "LoanStatusConfirmation"),
+                new XElement("Session", session)
+                )));
+            return request.ToString();
+        }
+
+        /// <summary>
         /// Returns Raw BankFile Fixed-width Values from the response
         /// </summary>
         /// <param name="responseXML"></param>
@@ -204,7 +221,7 @@ namespace PEPaymentProvider.RedPlanet
             var bankFiles = responseXML.Descendants("BankFiles").First();
             foreach(var bankFile in bankFiles.Descendants("BankFile"))
             {
-                yield return bankFile.Value;
+                yield return bankFile.Value.Replace("\n", "").Replace("\r", "");
             }
         }
     }

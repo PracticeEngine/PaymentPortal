@@ -23,7 +23,7 @@ namespace PEPaymentProvider.Receipting
             BrokerName = record.Substring(12, 20);
             BrokerBSB = record.Substring(32, 6);
             BrokerAccount = record.Substring(38, 9);
-            FileCreated = DateTime.ParseExact(record.Substring(45, 14), "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+            FileCreated = DateTime.ParseExact(record.Substring(47, 14), "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
         }
 
         public string BillerCode { get; private set; }

@@ -47,6 +47,7 @@ DECLARE @User varchar(255)= NULL
 DECLARE @Card varchar(50) = NULL
 
 SET @Bank = 1
+--StaffIdx needs to be an existing user
 SET @StaffIdx = 77
 
 SET		@Period =		(select PeriodEndDate from tblControlPeriods where @PaymentDate between PeriodStartDate and PeriodEndDate)
@@ -102,9 +103,10 @@ WHILE @@FETCH_STATUS = 0 AND @Amount > 0
 		SET @AllocAmount = @Amount
 	ELSE
 		SET @AllocAmount = @FeeAmount
-	SET @FeeNo = LTRIM(RTRIM(STR(@DebtTranIndex))) + '|' + LTRIM(RTRIM(STR(@AllocAmount))) + '|'
+	SET @FeeNo = LTRIM(RTRIM(STR(@DebtTranIndex))) + '|' + LTRIM(RTRIM(STR(@AllocAmount,19,4))) + '|'
 
-	EXEC pe6_Lodgement_Detail_Alloc_Update @LdgDetIdx, @FeeNo
+	EXEC PP_Lodgement_Detail_Alloc_Update @LdgDetIdx, @FeeNo
+
 	SET @Amount = @Amount - @AllocAmount
 
 	FETCH csr_Fees INTO @DebtTranIndex

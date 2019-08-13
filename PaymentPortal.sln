@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{0C4BBA03-C1F
 		sql\PaymentPortal\PP_Client_Details.sql = sql\PaymentPortal\PP_Client_Details.sql
 		sql\PaymentPortal\PP_Collection_Message.sql = sql\PaymentPortal\PP_Collection_Message.sql
 		sql\PaymentPortal\PP_Invoice_Details.sql = sql\PaymentPortal\PP_Invoice_Details.sql
+		sql\PaymentPortal\PP_Lodgement_Detail_Alloc_Update.sql = sql\PaymentPortal\PP_Lodgement_Detail_Alloc_Update.sql
 		sql\PaymentPortal\PP_Validate_Login.sql = sql\PaymentPortal\PP_Validate_Login.sql
 	EndProjectSection
 EndProject
@@ -35,7 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "QuickFee", "QuickFee", "{B2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E211FED3-50CA-4789-82AF-26EDF5FFF01D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PEPaymentProvider.QuickFee.Tests", "test\PEPaymentProvider.QuickFee.Tests\PEPaymentProvider.QuickFee.Tests.csproj", "{603D1597-9B31-4FA1-B9F2-0885174E6E77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PEPaymentProvider.QuickFee.Tests", "test\PEPaymentProvider.QuickFee.Tests\PEPaymentProvider.QuickFee.Tests.csproj", "{603D1597-9B31-4FA1-B9F2-0885174E6E77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
