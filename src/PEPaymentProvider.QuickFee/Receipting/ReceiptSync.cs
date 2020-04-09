@@ -21,7 +21,7 @@ namespace PEPaymentProvider.Receipting
     {
         private readonly RedPlanetXML redPlanetXML;
         private readonly PEPaymentService.ReceiptProcessor receiptProcessor;
-        //private readonly PELoggingService.LoggingService loggingService;
+        private readonly PELoggingService.LoggingService loggingService;
         private readonly Config config;
         private readonly string resilianceFile;
 
@@ -38,7 +38,7 @@ namespace PEPaymentProvider.Receipting
 
             receiptProcessor = new PEPaymentService.ReceiptProcessor();
 
-            //loggingService = new PELoggingService.LoggingService();
+            loggingService = new PELoggingService.LoggingService();
 
             resilianceFile = HostingEnvironment.MapPath("~/App_Data/ReceiptData.xml");
 
@@ -147,13 +147,17 @@ namespace PEPaymentProvider.Receipting
             // Process the Bank Data
             foreach (var bankData in redPlanetXML.ExtractBankFiles(loanStatusResponse))
             {
+                var bankFileLogId = loggingService.BankFileLog(null, bankData, null, false);
+
                 try
                 {
                     var bankFile = new BankFile(bankData);
 
                     // Call PE System to notify of Payment
-                    foreach(var detail in bankFile.Details)
+                    foreach (var detail in bankFile.Details)
                     {
+                        var receiptProcessorLogId = loggingService.ReceiptProcessorLog(null, bankFileLogId, detail.RawRecord, null, false);
+
                         try
                         {
                             switch (detail.InstructionType)
@@ -164,7 +168,7 @@ namespace PEPaymentProvider.Receipting
                                     System.Diagnostics.Trace.TraceInformation("Payent Reference - " + detail.PaymentReference);
                                     System.Diagnostics.Trace.TraceInformation("Amount - " + detail.Amount.ToString());
                                     System.Diagnostics.Trace.TraceInformation("Date of Payment - " + detail.UTCDateOfPayment.ToString());
-                                    await receiptProcessor.ProcessPaymentAsync(detail.InvoiceNumber.Split(','), detail.PaymentReference, detail.Amount, detail.UTCDateOfPayment);
+                                    await receiptProcessor.ProcessPaymentAsync(receiptProcessorLogId, detail.InvoiceNumber.Split(','), detail.PaymentReference, detail.Amount, detail.UTCDateOfPayment);
                                     System.Diagnostics.Trace.TraceInformation("ProcessPaymentAsync Complete {0:HH:mm:ss.fff}", DateTime.Now.ToString());
                                     break;
                                 case "15":
@@ -179,6 +183,8 @@ namespace PEPaymentProvider.Receipting
                         }
                         catch (Exception ex)
                         {
+                            loggingService.ReceiptProcessorLog(receiptProcessorLogId, null, null, ex.Message, false);
+
                             //processingError = true;
 
                             // Log and Swallow Errors to Ensure single processing of the resilianceFile
@@ -188,9 +194,13 @@ namespace PEPaymentProvider.Receipting
                             Debug.WriteLine(ex.Message);
                         }
                     }
+
+                    loggingService.BankFileLog(bankFileLogId, null, null, true);
                 }
                 catch (Exception ex)
                 {
+                    loggingService.BankFileLog(bankFileLogId, null, ex.Message, false);
+
                     //processingError = true;
 
                     // Log and Swallow Errors to Ensure single processing of the resilianceFile

@@ -20,10 +20,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{0C4BBA03-C1F
 		sql\PaymentPortal\PP_Add_Corrections.sql = sql\PaymentPortal\PP_Add_Corrections.sql
 		sql\PaymentPortal\PP_Add_Payments.sql = sql\PaymentPortal\PP_Add_Payments.sql
 		sql\PaymentPortal\PP_Add_Reversals.sql = sql\PaymentPortal\PP_Add_Reversals.sql
+		sql\PaymentPortal\PP_Bank_File_Log.sql = sql\PaymentPortal\PP_Bank_File_Log.sql
 		sql\PaymentPortal\PP_Client_Details.sql = sql\PaymentPortal\PP_Client_Details.sql
 		sql\PaymentPortal\PP_Collection_Message.sql = sql\PaymentPortal\PP_Collection_Message.sql
 		sql\PaymentPortal\PP_Invoice_Details.sql = sql\PaymentPortal\PP_Invoice_Details.sql
 		sql\PaymentPortal\PP_Lodgement_Detail_Alloc_Update.sql = sql\PaymentPortal\PP_Lodgement_Detail_Alloc_Update.sql
+		sql\PaymentPortal\PP_Receipt_Processor_Log.sql = sql\PaymentPortal\PP_Receipt_Processor_Log.sql
+		sql\PaymentPortal\PP_Upsert_Bank_File_Log_Entry.sql = sql\PaymentPortal\PP_Upsert_Bank_File_Log_Entry.sql
+		sql\PaymentPortal\PP_Upsert_Receipt_Processor_Log_Entry.sql = sql\PaymentPortal\PP_Upsert_Receipt_Processor_Log_Entry.sql
 		sql\PaymentPortal\PP_Validate_Login.sql = sql\PaymentPortal\PP_Validate_Login.sql
 	EndProjectSection
 EndProject

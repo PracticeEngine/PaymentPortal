@@ -147,14 +147,17 @@ namespace PEPaymentProvider.RedPlanet
         /// <returns></returns>
         public string BuildLoginRequest(Config config)
         {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes($"{config.Username}:{config.Password}");
+
+            var base64String = System.Convert.ToBase64String(plainTextBytes);
+
             var request = new XDocument(
                 new XElement("FundML",
                 new XElement("Version", 1),
                 new XElement("Request",
                 new XElement("Code", "LogOn"),
                 new XElement("Broker",
-                new XElement("Username", config.Username),
-                new XElement("Password", config.Password)
+                new XElement("BasicAuth", base64String)
                 ))));
             return request.ToString();
         }

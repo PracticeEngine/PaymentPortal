@@ -1,11 +1,21 @@
 ﻿CREATE PROCEDURE PP_Add_Payments
 
+@LogId int,
 @Invoices dbo.StringListType readonly,
 @PaymentRef nvarchar(20),
 @Amount money,
 @PaymentDate date
 
 AS
+
+Declare @InvList AS nvarchar(100)
+
+SELECT @InvList = COALESCE(@InvList + ',', '') + Name
+FROM @Invoices where Name IS NOT NULL
+
+UPDATE PP_Receipt_Processor_Log
+SET Instruction = 'Payment', Invoices = @InvList, PaymentReference = @PaymentRef, Amount = @Amount, PaymentDate = @PaymentDate
+WHERE LogId = @LogId
 
 CREATE TABLE #Inv(ContIndex int, DebtTranIndex int, DebtTranRefAlpha nvarchar(15))
 
@@ -19,12 +29,14 @@ WHERE DebtTranRefAlpha = ''
 
 IF EXISTS (SELECT I.DebtTranRefAlpha, COUNT(*) As NumInstances FROM #Inv I INNER JOIN tblTranDebtor D ON I.DebtTranRefAlpha = D.DebtTranRefAlpha WHERE D.DebtTranType IN (3,4) GROUP BY I.DebtTranRefAlpha HAVING COUNT(*) > 1)
 	BEGIN
-	PRINT 'Duplicates Found'
+	UPDATE PP_Receipt_Processor_Log SET ErrorMessage = 'Duplicates invoices found' WHERE LogId = @LogId
+	GOTO Cleanup
 	END
 
 IF EXISTS (SELECT TOP 1 1 FROM #Inv I LEFT JOIN tblTranDebtor D ON I.DebtTranRefAlpha = D.DebtTranRefAlpha AND D.DebtTranType IN (3,4) WHERE D.DebtTranIndex IS NULL)
 	BEGIN
-	PRINT 'Not all Refs have a match'
+	UPDATE PP_Receipt_Processor_Log SET ErrorMessage = 'Not all invoices have a match' WHERE LogId = @LogId
+	GOTO Cleanup
 	END
 
 UPDATE I 
@@ -35,7 +47,8 @@ WHERE D.DebtTranType IN (3,4)
 
 IF (SELECT COUNT(DISTINCT ContIndex) FROM #Inv) > 1
 	BEGIN
-	PRINT 'Multiple Clients Identified!'
+	UPDATE PP_Receipt_Processor_Log SET ErrorMessage = 'Multiple clients identified' WHERE LogId = @LogId
+	GOTO Cleanup
 	END
 
 DECLARE @Bank int
@@ -115,5 +128,8 @@ WHILE @@FETCH_STATUS = 0 AND @Amount > 0
 CLOSE csr_Fees
 DEALLOCATE csr_Fees
 
+UPDATE PP_Receipt_Processor_Log SET Processed = 1 WHERE LogId = @LogId
+
+Cleanup:
 DROP TABLE #Inv
 

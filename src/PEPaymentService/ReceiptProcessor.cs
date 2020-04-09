@@ -27,13 +27,14 @@ namespace PEPaymentService
         /// <param name="Amount">Amount of Payment</param>
         /// <param name="utcDateOfPayment">Date of Payment</param>
         /// <returns></returns>
-        public async Task ProcessPaymentAsync(string[] Invoices, string PaymentRef, decimal Amount, DateTime utcDateOfPayment)
+        public async Task ProcessPaymentAsync(int logId, string[] Invoices, string PaymentRef, decimal Amount, DateTime utcDateOfPayment)
         {
             using (var cmd = connection.CreateCommand())
             {
                 cmd.CommandText = "PP_Add_Payments";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
+                cmd.Parameters.AddWithValue("@LogId", logId);
                 cmd.Parameters.Add("@Invoices", SqlDbType.Structured).Value = ToStringListTypeData(Invoices);
                 cmd.Parameters.AddWithValue("@PaymentRef", PaymentRef);
                 cmd.Parameters.AddWithValue("@Amount", Amount);

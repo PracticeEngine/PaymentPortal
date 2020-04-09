@@ -13,6 +13,8 @@ namespace PEPaymentProvider.Receipting
 
         public BankDetailRecord(string record)
         {
+            RawRecord = record;
+
             if (String.IsNullOrWhiteSpace(record))
                 throw new ArgumentException(nameof(record), "Detail Record is Empty.");
             if (record.Length != 219)
@@ -32,6 +34,8 @@ namespace PEPaymentProvider.Receipting
             BPaySettlementDate = DateTime.ParseExact(record.Substring(105, 8).Trim(), "yyyyMMdd", CultureInfo.InvariantCulture);
             PaymentReference = record.Substring(113, 12).Trim().TrimStart('0');
         }
+
+        public string RawRecord { get; set; }
 
         public string BillerCode { get; private set; }
 
