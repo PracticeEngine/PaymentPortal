@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
@@ -26,6 +27,8 @@ namespace PaymentPortal.Controllers
             this.paymentProvider = ProviderService.GetProvider();
             this.antiForgeryService = new AntiForgeryService();
             this.engineService = new EngineService();
+
+            System.Net.ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
         }
 
         protected override void Initialize(RequestContext requestContext)
