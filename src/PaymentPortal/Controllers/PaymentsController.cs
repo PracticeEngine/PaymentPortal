@@ -110,7 +110,7 @@ namespace PaymentPortal.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize]
-        public ActionResult SelectInvoices()
+        public ActionResult SelectInvoices(string errorMessage)
         {
             try
             {
@@ -118,7 +118,8 @@ namespace PaymentPortal.Controllers
                 var model = new SelectInvoicesModel
                 {
                     Client = engineService.GetClientDetails(ContIndex),
-                    Invoices = engineService.GetInvoiceDetails(ContIndex)
+                    Invoices = engineService.GetInvoiceDetails(ContIndex),
+                    ErrorMessage = errorMessage
                 };
                 return View(model);
             }
@@ -161,10 +162,9 @@ namespace PaymentPortal.Controllers
         {
             try
             {
-                if (Invoices.Sum(i => i.Length) > 21)
+                if (Invoices.Select(i => i.Length).Sum() > 21)
                 {
-                    ModelState.AddModelError("", "Too many invoices selected. Sorry, but we cannot process all those invoices at one time.");
-                    return View("SelectInvoices");
+                    return RedirectToAction("SelectInvoices", new { errorMessage = "Too many invoices selected. Sorry, but we cannot process all those invoices at one time." });
                 }
 
                 int ContIndex = Convert.ToInt32(User.Identity.Name);

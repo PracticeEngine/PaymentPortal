@@ -7,7 +7,7 @@
         <blockquote>
             <div class="h6">Client: @Model.Client.ClientCode</div>
             <address>
-                <strong>@Model.Client.ClientName</strong><br/>
+                <strong>@Model.Client.ClientName</strong><br />
                 @Model.Client.ContAddress<br />
                 @Model.Client.ContCity, @Model.Client.ContCounty, @Model.Client.ContPostCode
             </address>
@@ -18,33 +18,40 @@
 @Html.ValidationSummary()
 @using (Html.BeginForm("PayNow", "Payments", FormMethod.Post, new { @class = "form-horizontal" }))
 {
-    <fieldset>
-        @Html.AntiForgeryToken()
-        <legend>Select Invoices to Pay Now</legend>
-        <div class="form-group">
-            <div class="col-sm-offset-4 col-sm-8">
-                <button type="submit" class="btn btn-primary">Pay Selected Invoices Now</button>
+<fieldset>
+    @Html.AntiForgeryToken()
+    <legend>Select Invoices to Pay Now</legend>
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>@Model.ErrorMessage</strong>
+        </div>
+    }
+    <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-8">
+            <button type="submit" class="btn btn-primary">Pay Selected Invoices Now</button>
+        </div>
+    </div>
+    @foreach (var inv in Model.Invoices)
+    {
+        var ttl = inv.CurSymbol + inv.DebtForTotal.ToString("N2");
+        var outstanding = inv.CurSymbol + inv.DebtForUnpaid.ToString("N2");
+        <div class="col-sm-4">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" checked name="Invoices" value="@inv.DebtTranRefAlpha" />
+                    @inv.TransactionType #@inv.DebtTranRefAlpha for @ttl on @inv.DebtTranDate.ToShortDateString()<br />
+                    <strong>@outstanding outstanding</strong>
+                </label>
             </div>
         </div>
-        @foreach (var inv in Model.Invoices)
-        {
-            var ttl = inv.CurSymbol + inv.DebtForTotal.ToString("N2");
-            var outstanding = inv.CurSymbol + inv.DebtForUnpaid.ToString("N2");
-            <div class="col-sm-4">
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" checked name="Invoices" value="@inv.DebtTranRefAlpha" />
-                        @inv.TransactionType #@inv.DebtTranRefAlpha for @ttl on @inv.DebtTranDate.ToShortDateString()<br />
-                        <strong>@outstanding outstanding</strong>
-                    </label>
-                </div>
-            </div>
-        }
-        <div class="form-group">
-            <div class="col-sm-offset-4 col-sm-8">
-                <button type="submit" class="btn btn-primary">Pay Selected Invoices Now</button>
-            </div>
+    }
+    <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-8">
+            <button type="submit" class="btn btn-primary">Pay Selected Invoices Now</button>
         </div>
-    </fieldset>
+    </div>
+</fieldset>
 }
 

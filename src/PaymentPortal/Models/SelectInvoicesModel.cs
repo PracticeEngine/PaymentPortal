@@ -12,5 +12,6 @@ namespace PaymentPortal.Models
 
         public IEnumerable<InvoiceDetails> Invoices { get; set; }
 
+        public string ErrorMessage { get; set; }
     }
 }
