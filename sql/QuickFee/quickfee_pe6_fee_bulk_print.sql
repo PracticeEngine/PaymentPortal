@@ -10,7 +10,7 @@ CREATE PROCEDURE [dbo].[quickfee_pe6_Fee_Bulk_Print]
 AS
 
 	DECLARE @QFURL nvarchar(255)
-	SET @QFURL = 'https://wafffcxktcftkcfgtleandtosh.com/payments/login'
+	SET @QFURL = 'https://wafffcxktcftkcfgtleandtosh.com/payments/login/'
 
 	CREATE TABLE #SEL (DebtTranIndex int)
 	
